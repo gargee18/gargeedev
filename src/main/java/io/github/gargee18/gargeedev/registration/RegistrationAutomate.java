@@ -1,8 +1,6 @@
 package io.github.gargee18.gargeedev.registration;
 
 
-import java.util.ArrayList;
-
 //specific libraries
 import ij.IJ;
 import ij.ImageJ;
@@ -12,7 +10,7 @@ import io.github.rocsg.fijiyama.fijiyamaplugin.RegistrationAction;
 import io.github.rocsg.fijiyama.registration.BlockMatchingRegistration;
 import io.github.rocsg.fijiyama.registration.ItkTransform;
 import io.github.rocsg.fijiyama.registration.Transform3DType;
-import io.github.gargee18.gargeedev.registration.GeneralUtils;
+
 
 
 

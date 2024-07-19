@@ -1,38 +1,44 @@
 package io.github.gargee18.gargeedev.testing;
 
-import java.awt.Image;
 import java.util.Arrays;
 
 import ij.IJ;
 import ij.ImageJ;
 import ij.ImagePlus;
 import ij.ImageStack;
+import ij.gui.Roi;
 import ij.process.ImageProcessor;
 import ij.process.ShortProcessor;
 import io.github.rocsg.fijiyama.common.VitimageUtils;
 import io.github.gargee18.gargeedev.registration.GeneralUtils;
 import io.github.gargee18.gargeedev.registration.RegistrationHighRes;
+import io.github.gargee18.gargeedev.registration.CropImagesWithRoi;
 
 public class TestClasses {
     
    
-    public static String[] year = GeneralUtils.years; 
+    public static String year = "2022"; 
 
-    
-    
     public static void main(String[] args) {
         ImageJ ij = new ImageJ();
 
         String[] specimen = GeneralUtils.getSpecimenListXR();
         String mainDir = "/home/phukon/Desktop/";
-        String outDir = mainDir + "cropdata"+year[2] +"/";
-        String rawData = mainDir+"XR_"+year[2]+"_raw/";
-        String cropCoords = mainDir + year[2]+"_cropcoords.csv";
-        String sizeOfCroppedImage = mainDir + "croppedImageDimensions" + year[2] + ".csv";
+        String outDir = mainDir + "cropdata"+year +"/";
+        String rawData = mainDir+"XR_"+year+"_raw/";
+        String cropCoords = mainDir + year+"_cropcoords.csv";
+        String sizeOfCroppedImage = mainDir + "croppedImageDimensions" + year + ".csv";
+        
+        ImagePlus img = new ImagePlus("/home/phukon/Desktop/XR_2023_raw/CEP_1266A_2023_XR.tif");
+        //getCoordinatesandCrop(rawData, outDir, specimen, cropCoords, sizeOfCroppedImage);
+        Roi roi = new Roi(113, 109, 312, 304);
+        ImagePlus imgc = CropImagesWithRoi.crop(img, roi, "stack");
+        imgc.show();
+        IJ.saveAsTiff(imgc,"/home/phukon/Desktop/cropdata2023/CEP_1266A_2023_XR_crop.tif");
 
         
-        getCoordinatesandCrop(rawData,outDir,specimen,cropCoords,sizeOfCroppedImage);
        
+    
     }
 
     public static ImagePlus getCoordinatesandCrop(String inputDir, String outputDir, String[] specimen, String pathToCSVFileforCropCoords, String pathtoCSVFileforCropSize){
@@ -71,15 +77,13 @@ public class TestClasses {
 
         // Cropping 
         for (int i = 1; i < specimen.length+1; i++){
-            ImagePlus img = new ImagePlus(inputDir + "CEP_" + specimen[i-1] + "_" + year[2] + "_XR.tif");
-            System.out.println(inputDir + "CEP_" + specimen[i-1] + "_" + year[2] + "_XR.tif");
+            ImagePlus img = new ImagePlus(inputDir + "CEP_" + specimen[i-1] + "_" + year + "_XR_unsigned.tif");
             imgCropped = cropImg(img, trCoords[i][1], trCoords[i][2], trCoords[i][3], cropImgdim[i][1], cropImgdim[i][2], cropImgdim[i][3]);
-            IJ.saveAsTiff(imgCropped, outputDir + "CEP_" + specimen[i-1]  + year[2] + "_XR_crop.tif");
+            IJ.saveAsTiff(imgCropped, outputDir + "CEP_" + specimen[i-1] + "_" + year + "_XR_crop_us.tif");
         }
 
         return imgCropped;
     }
-
     
     public static ImagePlus cropImg(ImagePlus img, int x0, int y0 , int z0, int dimXX, int dimYY, int dimZZ){
         
@@ -97,7 +101,7 @@ public class TestClasses {
         strTab[0][2] = "Y";
         strTab[0][3] = "Z";
         for (int i = 0; i < specimen.length; i ++){
-            String imgPath = inputDir+"cep_"+specimen[i]+"/raw/"+specimen[i]+"_"+year[2]+"_crop.tif";
+            String imgPath = inputDir+"cep_"+specimen[i]+"/raw/"+specimen[i]+"_"+year+"_crop.tif";
             System.out.println(imgPath);
             ImagePlus img= new ImagePlus(imgPath);
             int[] dim = VitimageUtils.getDimensions(img);
@@ -110,7 +114,6 @@ public class TestClasses {
         VitimageUtils.writeStringTabInCsv2(strTab,"/home/phukon/Desktop/croppedImageDimensions2024.csv");
     }
 
-
     public static void imgVoxSize(String inputDir, String[] specimen){
 
         int nbRowsCsv=1+GeneralUtils.getSpecimenListXR().length;
@@ -121,7 +124,7 @@ public class TestClasses {
         strTab[0][2] = "Y";
         strTab[0][3] = "Z";
         for (int i = 0; i < specimen.length; i ++){
-            String imgPath = inputDir + "CEP_"+specimen[i]+"_"+year[2]+"_XR.tif";
+            String imgPath = inputDir + "CEP_"+specimen[i]+"_"+year+"_XR.tif";
             ImagePlus img= new ImagePlus(imgPath);
             double[]voxs=VitimageUtils.getVoxelSizes(img);
             System.out.println("Parameters of specimen "+specimen[i]+ ": " +Arrays.toString(voxs));
@@ -133,17 +136,10 @@ public class TestClasses {
         VitimageUtils.writeStringTabInCsv2(strTab,inputDir+".csv");
     }
 
-
     public static ImagePlus createImageShort(ImagePlus imgCropped, String title, int width, int height, int slices, int options) {
-		// // int size = width * height;
-		// // if (size<0) return null;
-		// // short[] pixels = new short[size];
-        // short [] pixels = new short [width*height];
-		// ImageProcessor ip = new ShortProcessor(width, height, pixels, null);
-		// ImagePlus imp = new ImagePlus(title, ip);
-		// return imp;
 
-         ImageStack stack = new ImageStack(width, height);
+        ImageStack stack = new ImageStack(width, height);
+
         for (int i = 0; i < slices; i++) {
             short[] pixels = new short[width * height]; // Each slice is an array of pixels
             ImageProcessor ip = new ShortProcessor(width, height, pixels, null);
@@ -151,11 +147,8 @@ public class TestClasses {
         }
 
         ImagePlus imp = new ImagePlus(title, stack);
-
         return imp;
     }
-
-
 
     public static ImagePlus cropImageShort(ImagePlus img,int x0,int y0,int z0,int dimXX,int dimYY,int dimZZ) {
 		if(img.getType()!=ImagePlus.GRAY16)return null;
@@ -171,9 +164,10 @@ public class TestClasses {
 		int zM=(int)Math.min(zm+dimZZ-1,Z-1);
 		int dimZ=zM-zm+1;		
 			
-		ImagePlus out=createImageShort(img,"CroppedImage", dimX, dimY, dimZ, ij.gui.NewImage.FILL_BLACK);		
-		VitimageUtils.adjustImageCalibration(out, img);
-		VitimageUtils.adjustImageCalibration(out, img);
+		ImagePlus out=createImageShort(img,"CroppedImage", dimX, dimY, dimZ, ij.gui.NewImage.FILL_BLACK);	
+
+		//VitimageUtils.adjustImageCalibration(out, img);
+
 		for(int z=zm;z<zm+dimZ;z++) {
 			short[] valsImg=(short[])img.getStack().getProcessor(z+1).getPixels();
 			short[] valsOut=(short[])out.getStack().getProcessor(z-zm+1).getPixels();
@@ -187,6 +181,7 @@ public class TestClasses {
 		VitimageUtils.transferProperties(img, out);
 		return out;
 	}
+
   
     public static ImagePlus getRegisteredImage(String inputDir, String[] specimen){
         
@@ -195,8 +190,8 @@ public class TestClasses {
         for (int i = 0; i < specimen.length; i ++){
             RegistrationHighRes.getHighResTransform(specimen[i]);
             // Get images year 1 & year 2
-            ImagePlus imgOriginal = new ImagePlus(inputDir+"CEP_"+specimen[i]+"_"+year[0]+"_XR.tif");
-            ImagePlus imgCropped = new ImagePlus(inputDir+"CEP_"+specimen[i]+"_"+year[0]+"_XR_crop.tif");
+            ImagePlus imgOriginal = new ImagePlus(inputDir+"CEP_"+specimen[i]+"_"+year+"_XR_us.tif");
+            ImagePlus imgCropped = new ImagePlus(inputDir+"CEP_"+specimen[i]+"_"+year+"_XR_crop_us.tif");
 
             // Get  transformation matrices for low res
             //double trMatYear1 = 
@@ -204,7 +199,7 @@ public class TestClasses {
             // Get crop coordinates from csv
 
 
-            // Perform registration
+            // Multiply transformations
 
 
             //Save tr matrix

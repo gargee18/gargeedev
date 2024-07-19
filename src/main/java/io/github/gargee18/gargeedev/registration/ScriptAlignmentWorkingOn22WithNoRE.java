@@ -7,7 +7,7 @@
 
 
 
-package io.github.gargee18.gargeedev.registration;
+ package io.github.gargee18.gargeedev.registration;
 
 import ij.IJ;
 import ij.ImageJ;

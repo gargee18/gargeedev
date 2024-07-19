@@ -35,8 +35,7 @@
  */
 
 
-
-package io.github.gargee18.gargeedev.registration;
+ package io.github.gargee18.gargeedev.registration;
 
 //specific libraries
 import ij.IJ;
@@ -45,17 +44,15 @@ import ij.ImagePlus;
 //my libraries
 import io.github.rocsg.fijiyama.common.VitimageUtils;
 import io.github.rocsg.fijiyama.registration.ItkTransform;
-import io.github.gargee18.gargeedev.registration.GeneralUtils;
-import io.github.gargee18.gargeedev.registration.TransformUsingMetadata;
+
 
 
 public class RegistrationHighRes {
     
     public static String year1=GeneralUtils.years[0];
     public static String year2=GeneralUtils.years[1];
-    public static String mainDir="/home/phukon/Desktop/registration/CEP_2022_XR_2023_XR_2024_XR/";// Path to the directory consisting the data
-    //public static String mainDir="/home/phukon/Desktop/xray_2023_2024_hires/";// Path to the directory consisting the data
-
+    //public static String mainDir="/home/phukon/Desktop/registration/CEP_2022_XR_2023_XR_2024_XR/";// Path to the directory consisting the data
+    public static String mainDir="/home/phukon/Desktop/";// Path to the directory consisting the data
 
     //Main input points
     public static void main(String[] args) {
@@ -134,7 +131,116 @@ public class RegistrationHighRes {
             return trTotal;
         }
         
-        
+        public static double[] giveCropInfoAsTranslationVectorDependingOnImageNameAndYear(String specimenName,String year){
+            double[]vect=new double[3];
+            if(specimenName.contains("1181")){
+                if(year.contains("2022"))vect=new double[]{};
+                if(year.contains("2023"))vect=new double[]{};
+                if(year.contains("2024"))vect=new double[]{};
+            }
+    
+            else if(specimenName.contains("313B")){
+                if(year.contains("2022"))vect=new double[]{72.85,69.38,0};
+                if(year.contains("2023"))vect=new double[]{155.63,123.75,0};
+                if(year.contains("2024"))vect=new double[]{93.51,91.06,0};
+            }
+
+            else if(specimenName.contains("318")){
+                if(year.contains("2022"))vect=new double[]{};
+                if(year.contains("2023"))vect=new double[]{};
+                if(year.contains("2024"))vect=new double[]{};
+            }
+            else if(specimenName.contains("322")){
+                if(year.contains("2022"))vect=new double[]{};
+                if(year.contains("2023"))vect=new double[]{};
+                if(year.contains("2024"))vect=new double[]{};
+            }
+            else if(specimenName.contains("323")){
+                if(year.contains("2022"))vect=new double[]{};
+                if(year.contains("2023"))vect=new double[]{};
+                if(year.contains("2024"))vect=new double[]{};
+            }
+            else if(specimenName.contains("330")){
+                if(year.contains("2022"))vect=new double[]{};
+                if(year.contains("2023"))vect=new double[]{};
+                if(year.contains("2024"))vect=new double[]{};
+            }
+            else if(specimenName.contains("335")){
+                if(year.contains("2022"))vect=new double[]{};
+                if(year.contains("2023"))vect=new double[]{};
+                if(year.contains("2024"))vect=new double[]{};
+            }
+            else if(specimenName.contains("368B")){
+                if(year.contains("2022"))vect=new double[]{};
+                if(year.contains("2023"))vect=new double[]{};
+                if(year.contains("2024"))vect=new double[]{};
+            }
+            else if(specimenName.contains("378A")){
+                if(year.contains("2022"))vect=new double[]{};
+                if(year.contains("2023"))vect=new double[]{};
+                if(year.contains("2024"))vect=new double[]{};
+            }
+            else if(specimenName.contains("378B")){
+                if(year.contains("2022"))vect=new double[]{};
+                if(year.contains("2023"))vect=new double[]{};
+                if(year.contains("2024"))vect=new double[]{};
+            }
+            else if(specimenName.contains("380A")){
+                if(year.contains("2022"))vect=new double[]{};
+                if(year.contains("2023"))vect=new double[]{};
+                if(year.contains("2024"))vect=new double[]{};
+            }
+            else if(specimenName.contains("764B")){
+                if(year.contains("2022"))vect=new double[]{};
+                if(year.contains("2023"))vect=new double[]{};
+                if(year.contains("2024"))vect=new double[]{};
+            }
+            else if(specimenName.contains("988B")){
+                if(year.contains("2022"))vect=new double[]{};
+                if(year.contains("2023"))vect=new double[]{};
+                if(year.contains("2024"))vect=new double[]{};
+            }
+            else if(specimenName.contains("1186A")){
+                if(year.contains("2022"))vect=new double[]{};
+                if(year.contains("2023"))vect=new double[]{};
+                if(year.contains("2024"))vect=new double[]{};
+            }
+            else if(specimenName.contains("1189")){
+                if(year.contains("2022"))vect=new double[]{};
+                if(year.contains("2023"))vect=new double[]{};
+                if(year.contains("2024"))vect=new double[]{};
+            }
+            else if(specimenName.contains("1191")){
+                if(year.contains("2022"))vect=new double[]{};
+                if(year.contains("2023"))vect=new double[]{};
+                if(year.contains("2024"))vect=new double[]{};
+            }
+            else if(specimenName.contains("1193")){
+                if(year.contains("2022"))vect=new double[]{};
+                if(year.contains("2023"))vect=new double[]{};
+                if(year.contains("2024"))vect=new double[]{};
+            }
+            else if(specimenName.contains("1195")){
+                if(year.contains("2022"))vect=new double[]{};
+                if(year.contains("2023"))vect=new double[]{};
+                if(year.contains("2024"))vect=new double[]{};
+            }
+            else if(specimenName.contains("1266A")){
+                if(year.contains("2022"))vect=new double[]{};
+                if(year.contains("2023"))vect=new double[]{};
+                if(year.contains("2024"))vect=new double[]{};
+            }
+            else if(specimenName.contains("2184A")){
+                if(year.contains("2022"))vect=new double[]{};
+                if(year.contains("2023"))vect=new double[]{};
+                if(year.contains("2024"))vect=new double[]{};
+            }
+            else {
+                IJ.log("Warning : specimen name or year not found : "+specimenName+" "+year);
+            }
+            return vect;
+        }
+            
     
        
 
@@ -330,7 +436,7 @@ public class RegistrationHighRes {
             specimenList = new String[]{singleSpecimen};
         } else {
             // Select the entire list
-            specimenList = GeneralUtils.getSpecimenListXR();
+            specimenList = GeneralUtils.specimenListXR;
         }
         return specimenList;
     }

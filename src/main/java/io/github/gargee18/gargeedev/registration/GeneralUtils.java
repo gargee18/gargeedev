@@ -24,11 +24,13 @@ public class GeneralUtils {
     final static String[]specimenListMRI=new String[]{"318","322","323","330","335","764B","1181","1193"}; 
 
     // Specimens (XRay)
-    final static String[]specimenListXR=new String[]{"313B","318","322","323","330","335","368B","378A","378B","380A","764B","988B","1181","1186A","1189","1191","1193","1195","1266A","2184A"};
+    final static String[] specimenListXR=new String[]{"313B","318","322","323","330","335","368B","378A","378B","380A","764B","988B","1181","1186A","1189","1191","1193","1195","1266A","2184A"};
+
+
 
 
     // Modalities for MRI
-    static String[]modalities=new String[]{"T1","T2"};
+    public static String[]modalities=new String[]{"T1","T2"};
 
 
     // Params obtained from the metadata
@@ -50,15 +52,10 @@ public class GeneralUtils {
      * 
      * 
     */
-    public static String[] getModalities(){
-        String[]ret=new String[modalities.length];
-        for(int i = 0; i<ret.length;i++)ret[i]= new String(modalities[i]);
-        return modalities;
-    }
-    
+
     public static String[] getParams(){
         String[]ret=new String[paramsWanted.length];
-        for(int i = 0; i<ret.length;i++)ret[i]= new String(paramsWanted[i]);
+        for(int i=0;i<ret.length;i++)ret[i]=new String(paramsWanted[i]);
         return paramsWanted;
     }
 
@@ -101,5 +98,7 @@ public class GeneralUtils {
         IJ.showMessage("Big failure : no match for the specimen "+str+" . An error will occur.");
         return -1;
     }
+
+   
 
 }
