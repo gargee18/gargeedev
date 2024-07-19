@@ -29,23 +29,6 @@ import ij.IJ;
 import ij.ImagePlus;
 
 public class ArrangeDCMfiles {
-     // Define the year of the data
-    public static String year = "";
-
-     // Define the specimen and modality from the GeneralUtils class
-    public static String specimen = GeneralUtils.specimenListMRI[7];
-    public static String mod = GeneralUtils.modalities[0];
-
-    // Define the input and output directories
-    public static String dir = "";
-    public static String dirOutput = "";
-
-    public static void main(String[] args) {
-        // Get the list of files arranged in the correct order
-        List<FileSliceLocationPair> filesArranged = filesInRightOrder(dir, mod, GeneralUtils.paramsWanted[5]);
-        // Save the ordered files to the output directory
-        saveFiles(filesArranged, dirOutput, specimen);
-    }
 
     // Extracts specified parameters (e.g., slice location) from the DICOM image metadata
     public static String[] getParamsFromDCM(ImagePlus imgPar, String paramsWanted) {

@@ -31,7 +31,7 @@
 package io.github.gargee18.gargeedev.registration;
 
 import ij.IJ;
-import ij.ImageJ;
+//import ij.ImageJ;
 import ij.ImagePlus;
 import ij.gui.Roi;
 import ij.plugin.frame.RoiManager;
@@ -39,45 +39,6 @@ import ij.process.ImageProcessor;
 import io.github.rocsg.fijiyama.common.VitimageUtils;
 
 public class JointHistogramBasedSegmentation {
-    public static String specimen = GeneralUtils.getXRSpecimenNameWithIndex(0);
-    public static String[] specimenList = GeneralUtils.getSpecimenListXR();
-    public static String year1 = "2022";
-    public static String year2 = "2023";
-
-    public static void main(String[] args) {
-        ImageJ ij = new ImageJ();
-
-        for (int i = 0; i < specimenList.length; i++) {
-            String imgPathR = "/home/phukon/Desktop/Results_2024/Cep_Monitoring/XR/4_Registered_Images/8bit_Registered_2022_2023_2024/CEP_"
-                    + specimenList[i] + "_" + year1 + "_XR.tif";// Red channel
-            String imgPathG = "/home/phukon/Desktop/Results_2024/Cep_Monitoring/XR/4_Registered_Images/8bit_Registered_2022_2023_2024/CEP_"
-                    + specimenList[i] + "_" + year2 + "_XR.tif";// Green channel
-
-            ImagePlus imgR = IJ.openImage(imgPathR);
-            ImagePlus imgG = IJ.openImage(imgPathG);
-            // ImagePlus imgComposite = VitimageUtils.compositeNoAdjustOf(imgR, imgG) ;
-            ImagePlus[] jointHistograms = computeAndDisplayJointHistogramsWithNoBinSize(imgR, imgG);
-            jointHistograms[0].show();
-            jointHistograms[0].setTitle(specimenList[i]+"_"+year1+"_"+year2+"_Probability.tif");
-            jointHistograms[1].show();
-            jointHistograms[1].setTitle(specimenList[i]+"_"+year1+"_"+year2+"_LogProbability.tif");
-            jointHistograms[2].show();
-            jointHistograms[2].setTitle(specimenList[i]+"_"+year1+"_"+year2+"_MutualProbability.tif");
-
-            IJ.save(jointHistograms[0],"/home/phukon/Desktop/Results_2024/Cep_Monitoring/XR/5_Histogram/jointHistogram/" + specimenList[i] + "_" + year1 + "_" + year2 + "_Probability.tif");
-            IJ.save(jointHistograms[1],"/home/phukon/Desktop/jointHistoandROI/"+specimenList[i]+"_"+year1+"_"+year2+"_LogProbability.tif");
-            System.out.println("Saved to"+"/home/phukon/Desktop/jointHistoandROI/"+specimenList[i]+"_"+year1+"_"+year2+"_LogProbability.tif");
-            IJ.save(jointHistograms[2],"/home/phukon/Desktop/jointHistoandROI/"+specimenList[i]+"_"+year1+"_"+year2+"_MutualProbability.tif");
-            System.out.println("Saved to"+"/home/phukon/Desktop/jointHistoandROI/"+specimenList[i]+"_"+year1+"_"+year2+"_MutualProbability.tif");
-
-            ImagePlus segmentation=makeSegmentationBasedOnRoiInputFromTheUser(imgR,imgG,jointHistograms[0],jointHistograms[1],specimen);
-            segmentation.setTitle("Segmentation");
-            IJ.run(segmentation,"Fire","");
-            segmentation.show();
-            IJ.save(segmentation,"/home/phukon/Desktop/jointHistoandROI/"+specimen+"_"+year1+"_"+year2+"_segmented");
-        }
-        System.out.println("fini");
-    }
 
     public static ImagePlus makeSegmentationBasedOnRoiInputFromTheUser(ImagePlus imgR, ImagePlus imgG, ImagePlus histo,
             ImagePlus histoLog, String specimen) {
@@ -293,7 +254,8 @@ public class JointHistogramBasedSegmentation {
                 }
             }
         }
-        for(int i=1;i<255;i++)System.out.println((tabNormalizedRatio[i])*2.0/(tabNormalizedRatio[i-1]+tabNormalizedRatio[i+1]));
+        for (int i = 1; i < 255; i++)
+            System.out.println((tabNormalizedRatio[i]) * 2.0 / (tabNormalizedRatio[i - 1] + tabNormalizedRatio[i + 1]));
         // Normalize for getting a probability
         for (int r = 0; r < (256); r++)
             for (int g = 0; g < (256); g++) {
@@ -328,15 +290,16 @@ public class JointHistogramBasedSegmentation {
 
             }
 
-        double[] logprobaregressionLine = calcRegressionLine(jointHistogramLogProbability[0], jointHistogramLogProbability[1]);
-        
-        //Draw lines on Proba
+        double[] logprobaregressionLine = calcRegressionLine(jointHistogramLogProbability[0],
+                jointHistogramLogProbability[1]);
+
+        // Draw lines on Proba
         drawRegressionLine(imgProba, logprobaregressionLine[0], logprobaregressionLine[1]);
 
-        //Draw lines on imgLogProba
+        // Draw lines on imgLogProba
         drawRegressionLine(imgLogProba, logprobaregressionLine[0], logprobaregressionLine[1]);
 
-        //Draw lines on imgMutualProba
+        // Draw lines on imgMutualProba
         drawRegressionLine(imgMutualProba, logprobaregressionLine[0], logprobaregressionLine[1]);
 
         IJ.run(imgLogProba, "Fire", "");
@@ -349,32 +312,33 @@ public class JointHistogramBasedSegmentation {
 
         return new ImagePlus[] { imgProba, imgLogProba, imgMutualProba };
     }
-        public static double[] calcRegressionLine(double[] x, double[] y){
+
+    public static double[] calcRegressionLine(double[] x, double[] y) {
 
         double a = 0;
         double b = 0;
-        
+
         double xMean = calcMean(x);
         double yMean = calcMean(y);
 
         double numerator = 0;
         double denominator = 0;
 
-        for(int i = 0;i<255;i++){
+        for (int i = 0; i < 255; i++) {
             numerator += (x[i] - xMean) * (yMean - y[255 - i]);
-            denominator += Math.pow((x[i] - xMean),2);
+            denominator += Math.pow((x[i] - xMean), 2);
         }
-        
-        System.out.println("yMean:"+yMean);
-        System.out.println("xMean:"+xMean);
-        System.out.println("numerator:"+numerator);
-        System.out.println("denominator:"+denominator);
 
-        a = numerator/denominator;
+        System.out.println("yMean:" + yMean);
+        System.out.println("xMean:" + xMean);
+        System.out.println("numerator:" + numerator);
+        System.out.println("denominator:" + denominator);
+
+        a = numerator / denominator;
         b = yMean - a * xMean;
-        System.out.println("Slope: "+a);
-        System.out.println("Intercept: "+b);
-        return new double[]{a,b};
+        System.out.println("Slope: " + a);
+        System.out.println("Intercept: " + b);
+        return new double[] { a, b };
     }
 
     private static double calcMean(double[] data) {
@@ -387,8 +351,8 @@ public class JointHistogramBasedSegmentation {
         return mean;
     }
 
-     // Method to draw a straight line on an ImagePlus object
-     private static void drawRegressionLine(ImagePlus image, double a, double b) {
+    // Method to draw a straight line on an ImagePlus object
+    private static void drawRegressionLine(ImagePlus image, double a, double b) {
         ImageProcessor ip = image.getProcessor();
         int width = ip.getWidth();
         int height = ip.getHeight();
@@ -406,6 +370,4 @@ public class JointHistogramBasedSegmentation {
         ip.drawLine(x1, y1, x2, y2);
     }
 
-
-    
 }
