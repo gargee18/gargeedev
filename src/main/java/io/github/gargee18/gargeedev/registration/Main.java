@@ -3,10 +3,6 @@ package io.github.gargee18.gargeedev.registration;
 import ij.IJ;
 import ij.ImageJ;
 import ij.ImagePlus;
-import ij.gui.Roi;
-import ij.plugin.frame.RoiManager;
-import ij.process.ImageProcessor;
-import io.github.rocsg.fijiyama.common.VitimageUtils;
 
 public class Main {
     public static String specimen = GeneralUtils.getXRSpecimenNameWithIndex(0);
@@ -21,6 +17,7 @@ public class Main {
                     + specimenList[i] + "_" + year1 + "_XR.tif";// Red channel
             String imgPathG = "/home/phukon/Desktop/Results_2024/Cep_Monitoring/XR/4_Registered_Images/8bit_Registered_2022_2023_2024/CEP_"
                     + specimenList[i] + "_" + year2 + "_XR.tif";// Green channel
+            String outputDir = "/home/phukon/Desktop/jointHistoandROI/roi_" + specimen + ".zip";
 
             ImagePlus imgR = IJ.openImage(imgPathR);
             ImagePlus imgG = IJ.openImage(imgPathG);
@@ -39,7 +36,7 @@ public class Main {
             IJ.save(jointHistograms[2],"/home/phukon/Desktop/jointHistoandROI/"+specimenList[i]+"_"+year1+"_"+year2+"_MutualProbability.tif");
             System.out.println("Saved to"+"/home/phukon/Desktop/jointHistoandROI/"+specimenList[i]+"_"+year1+"_"+year2+"_MutualProbability.tif");
 
-            ImagePlus segmentation=JointHistogramBasedSegmentation.makeSegmentationBasedOnRoiInputFromTheUser(imgR,imgG,jointHistograms[0],jointHistograms[1],specimen);
+            ImagePlus segmentation=JointHistogramBasedSegmentation.makeSegmentationBasedOnRoiInputFromTheUser(imgR,imgG,jointHistograms[0],jointHistograms[1],specimen,outputDir);
             segmentation.setTitle("Segmentation");
             IJ.run(segmentation,"Fire","");
             segmentation.show();

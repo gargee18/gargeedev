@@ -31,7 +31,6 @@
 package io.github.gargee18.gargeedev.registration;
 
 import ij.IJ;
-//import ij.ImageJ;
 import ij.ImagePlus;
 import ij.gui.Roi;
 import ij.plugin.frame.RoiManager;
@@ -40,8 +39,7 @@ import io.github.rocsg.fijiyama.common.VitimageUtils;
 
 public class JointHistogramBasedSegmentation {
 
-    public static ImagePlus makeSegmentationBasedOnRoiInputFromTheUser(ImagePlus imgR, ImagePlus imgG, ImagePlus histo,
-            ImagePlus histoLog, String specimen) {
+    public static ImagePlus makeSegmentationBasedOnRoiInputFromTheUser(ImagePlus imgR, ImagePlus imgG, ImagePlus histo, ImagePlus histoLog, String specimen, String outputDir) {
 
         // Ask for three rois
         RoiManager roiManager = RoiManager.getRoiManager();
@@ -60,7 +58,7 @@ public class JointHistogramBasedSegmentation {
         Roi roi3 = roiManager.getRoi(2); // index for third polygon
 
         // save roi
-        roiManager.runCommand("Save", "/home/phukon/Desktop/jointHistoandROI/roi_" + specimen + ".zip");
+        roiManager.runCommand("Save", outputDir);
 
         // Get access to original images (imgR and imgG) as dataR[] and dataG[]
         int X = imgR.getWidth();
@@ -195,9 +193,6 @@ public class JointHistogramBasedSegmentation {
                         + 256 / binSize * ((256 / binSize - 1) - g)] = (float) jointHistogramLogProbability[r][g];
 
                 // write things in mutual image
-                // dataMutualProba[r+256*(255-g)]=(float)(jointHistogramProbability[r][g]
-                // *(jointHistogramLogProbability[r][g])/(marginalDistributionX[r] *
-                // marginalDistributionY[g]));
                 dataMutualProba[r + 256 / binSize * ((256 / binSize - 1) - g)] = (float) (mutualProba[r][g]);
 
             }

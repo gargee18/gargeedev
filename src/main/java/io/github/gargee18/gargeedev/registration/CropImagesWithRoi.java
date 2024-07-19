@@ -33,7 +33,7 @@ public class CropImagesWithRoi {
 
     public static void main(String[] args) {
         // Open an image using ImageJ
-        //ImageJ ij = new ImageJ();
+        ImageJ ij = new ImageJ();
 
         // Define the specimen identifiers and directories
         String[] specimen = GeneralUtils.specimenListXR;
