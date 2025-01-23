@@ -30,7 +30,7 @@
  * (This is an experimental class; in the end did not use this method for normalizing data)
  */
 
-package io.github.rocsg.fijiyama.gargeetest.ceps;
+package io.github.gargee18.gargeedev.ceps;
 
 import ij.IJ;
 import ij.ImageJ;

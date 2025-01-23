@@ -29,7 +29,7 @@ public class Step_2_InocAlignment implements PipelineStep{
         String[] timestamps = Config.timestamps;
         int N = timestamps.length;
 
-        for(int n=0; n< 1; n++){
+        for(int n=3; n< 4; n++){
             String filePath = Config.mainDir+"TargetCoordsForAlignment_"+timestamps[n]+".csv";
 
             // Read the CSV file into a 2D array (String[][])

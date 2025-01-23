@@ -3,7 +3,6 @@ import java.util.ArrayList;
 import java.util.List;
 import ij.ImageJ;
 
-import io.github.rocsg.fijiyama.registration.ItkTransform;
 import io.github.gargee18.gargeedev.cuttings.core.Specimen;
 import io.github.gargee18.gargeedev.cuttings.processing.Step_0_Normalize;
 import io.github.gargee18.gargeedev.cuttings.processing.Step_1_Subsample;
@@ -18,8 +17,8 @@ public class MainController {
 
      public static void main(String[] args) throws Exception {
         ImageJ ij=new ImageJ();
-        // test();
-       run();
+        test();
+    //    run();
     }
 
     
@@ -75,8 +74,8 @@ public class MainController {
 
     public static ArrayList<PipelineStep>getStepsForDevPipeline(){
         ArrayList<PipelineStep> steps = new ArrayList<PipelineStep>();
-        steps.add(new Step_2_InocAlignment());
-
+        steps.add(new Step_3_RegistrationRigid());
+        steps.add(new Step_4_Hyperstack());
         return steps;
     }
 

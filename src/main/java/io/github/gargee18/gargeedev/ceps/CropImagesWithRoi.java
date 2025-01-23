@@ -19,7 +19,7 @@
  * 
  */
 
-package io.github.rocsg.fijiyama.gargeetest.ceps;
+package io.github.gargee18.gargeedev.ceps;
 
 import ij.IJ;
 import ij.ImageJ;

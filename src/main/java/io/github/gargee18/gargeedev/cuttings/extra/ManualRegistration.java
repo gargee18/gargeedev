@@ -75,18 +75,18 @@ public class ManualRegistration {
     }
 
 
-    public static void decode_transform_nofuck(String specimen){
-        // for(String specimen : new String[]{"B_202","B_203"}){
-            for(int step:new int[]{0,1}){
+    // public static void decode_transform_nofuck(String specimen){
+    //     // for(String specimen : new String[]{"B_202","B_203"}){
+    //         for(int step:new int[]{0,1}){
 
-                String originalPath=getPathToManualRegistrationTransformation(specimen,step);
-                // String destinationPath=originalPath+"butgood.txt";
-                String destinationPath="/home/phukon/Desktop/Cuttings_MRI_registration/"+specimen+"/transforms_corrected/Transform_Step_"+step+".txt";
-                ItkTransform trRepaired=new ItkTransform(ItkTransform.quickFixBrokenItkMatrixTo4x4Matrix(originalPath));
-                trRepaired.writeMatrixTransformToFile(destinationPath);
-            }
-        // }
-    }
+    //             String originalPath=getPathToManualRegistrationTransformation(specimen,step);
+    //             // String destinationPath=originalPath+"butgood.txt";
+    //             String destinationPath="/home/phukon/Desktop/Cuttings_MRI_registration/"+specimen+"/transforms_corrected/Transform_Step_"+step+".txt";
+    //             ItkTransform trRepaired=new ItkTransform(ItkTransform.quickFixBrokenItkMatrixTo4x4Matrix(originalPath));
+    //             trRepaired.writeMatrixTransformToFile(destinationPath);
+    //         }
+    //     // }
+    // }
 
     public static void test2_testAllsteps(String specimen){
         ImagePlus img0 = IJ.openImage(getPathToImage(specimen,0));

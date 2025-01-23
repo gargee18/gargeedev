@@ -30,7 +30,7 @@ public class Step_3_RegistrationRigid implements PipelineStep{
     public static void main(String[] args) throws Exception{
         Specimen spec= new Specimen("B_201");
         new Step_3_RegistrationRigid().execute(spec,true); 
-        // seeResultsOfRigidRegistration(spec, 0);
+        seeResultsOfRigidRegistration(spec, 0);
     }
  
 
@@ -64,13 +64,7 @@ public class Step_3_RegistrationRigid implements PipelineStep{
             //And do the same for the moving image
             imgRefToInoc=trInocRef.transformImage(imgRef,imgRef);
             imgMovToInoc=trInocMov.transformImage(imgRef,imgMov);
-            imgRefToInoc.show();
-            imgRefToInoc.setSlice(256);
-            imgMovToInoc.show();
-            imgMovToInoc.setSlice(256);
-            VitimageUtils.waitFor(15000);
-            imgRefToInoc.close();
-            imgMovToInoc.close();
+            
             // if(true)continue;
             // Register to get the rigid matrix that align properly both images, but in the inoc space
             ItkTransform trRigid0 = autoLinearRegistrationWithPith(imgRefToInoc, imgMovToInoc, null, specimen, mask,testing);
@@ -79,7 +73,7 @@ public class Step_3_RegistrationRigid implements PipelineStep{
     }
     
 
-    public static ItkTransform autoLinearRegistrationWithPith(ImagePlus imgRef, ImagePlus imgMov, ItkTransform trInit, Specimen specimen, String pathToMask,boolean testing){
+    public static ItkTransform autoLinearRegistrationWithPith(ImagePlus imgRef, ImagePlus imgMov, ItkTransform trInit, Specimen specimen, String pathToMask,boolean testing){  
         RegistrationAction regAct = new RegistrationAction();
         regAct.defineSettingsFromTwoImages(imgRef, imgMov, null, false);
         regAct.typeTrans=Transform3DType.RIGID;
@@ -90,20 +84,48 @@ public class Step_3_RegistrationRigid implements PipelineStep{
         regAct.bhsX=3;
         regAct.bhsY=3;
         regAct.bhsZ=3;
-        regAct.strideX=8;
-        regAct.strideY=8;
-        regAct.strideZ=8;
+        regAct.strideX=7;
+        regAct.strideY=7;
+        regAct.strideZ=7;
         regAct.iterationsBMLin=(testing ? 1 : 8);
         regAct.neighX=2;
         regAct.neighX=2;
         regAct.neighZ=2;
         BlockMatchingRegistration bmRegistration = BlockMatchingRegistration.setupBlockMatchingRegistration(imgRef, imgMov, regAct);
         bmRegistration.mask=IJ.openImage(pathToMask);
-        bmRegistration.returnComposedTransformationIncludingTheInitialTransformationGiven=true;
-        ItkTransform trFinal=bmRegistration.runBlockMatching(trInit, false);
+        ItkTransform trFinal=bmRegistration.runBlockMatching(null, false);
         bmRegistration.closeLastImages();
         bmRegistration.freeMemory();
         return trFinal;
+    }
+
+    public static void seeResultsOfRigidRegistration(Specimen specimen, int step){
+        int indexRef = step;
+        int indexMov = step+1;
+        ImagePlus imgRef = IJ.openImage(Config.getPathToSubsampledImage(specimen,indexRef));
+        imgRef.show();
+        ImagePlus imgMov = IJ.openImage(Config.getPathToSubsampledImage(specimen,indexMov));
+        imgMov.show();
+
+
+        ImagePlus imgRefToInoc=imgRef;
+        ItkTransform trInocRef = ItkTransform.readTransformFromFile(Config.getPathToInoculationAlignmentTransformation(specimen,indexRef));
+        imgRefToInoc=trInocRef.transformImage(imgRef,imgRefToInoc);
+        imgRefToInoc.show();
+        
+
+        ImagePlus imgMovToInoc=imgMov;
+        ItkTransform trInocMov = ItkTransform.readTransformFromFile(Config.getPathToInoculationAlignmentTransformation(specimen,indexMov));
+        imgMovToInoc=trInocMov.transformImage(imgMov,imgMovToInoc);
+        imgMovToInoc.show();
+
+        VitimageUtils.compositeNoAdjustOf(imgRefToInoc, imgMovToInoc, "composite").show();
+       
+        ItkTransform tr=ItkTransform.readTransformFromFile(Config.getPathToRigidRegistrationMatrix(specimen, indexRef, indexMov));
+        System.out.println(Config.getPathToRigidRegistrationMatrix(specimen, indexRef, indexMov));
+        // ItkTransform trMov = trInocMov.addTransform(tr); 
+        ImagePlus movRegistered=tr.transformImage(imgRefToInoc, imgMovToInoc);
+        VitimageUtils.compositeNoAdjustOf(imgRefToInoc, movRegistered, "composite").show();
     }
 
 
@@ -166,18 +188,7 @@ public class Step_3_RegistrationRigid implements PipelineStep{
     }
 
 
-    public static void seeResultsOfRigidRegistration(Specimen specimen, int step){
-        int indexRef = step;
-        int indexMov = step+1;
-        ImagePlus imgRef = IJ.openImage(Config.getPathToRawImage(specimen,indexRef));
-        ImagePlus imgRefToInoc=imgRef;
-        ItkTransform trInoc = ItkTransform.readTransformFromFile(Config.getPathToInoculationAlignmentTransformation(specimen,indexRef));
-        imgRefToInoc=trInoc.transformImage(imgRef,imgRefToInoc);
-        ImagePlus imgMov = IJ.openImage(Config.getPathToRawImage(specimen,indexMov));
-        ItkTransform tr=ItkTransform.readTransformFromFile(Config.getPathToRigidRegistrationMatrix(specimen, indexRef, indexMov));
-        ImagePlus movRegistered=tr.transformImage(imgRefToInoc, imgMov);
-        VitimageUtils.compositeNoAdjustOf(imgRefToInoc, movRegistered, "composite").show();
-    }
+    
 }
 
 
