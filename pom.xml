@@ -82,9 +82,9 @@
 	</ciManagement>
 
 	<properties>
-		<package-name>net.imagej.fijirelax</package-name>
+		<package-name>io.github.gargee18.gargeedev</package-name>
 		<license.licenseName>bsd_2</license.licenseName>
-		<main-class>FijiRelax_Gui</main-class>
+		<main-class>Main</main-class>
 		<license.copyrightOwners>Copyleft</license.copyrightOwners>
   	    <maven.compiler.source>8</maven.compiler.source>
 	    <maven.compiler.target>8</maven.compiler.target>
@@ -112,7 +112,6 @@
 	
 
 
-  	
   		
 	<dependencies>
 		<!-- Import from ImageJ world -->
@@ -120,11 +119,12 @@
 		    <groupId>net.imagej</groupId>
 		    <artifactId>ij</artifactId>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/sc.fiji/VIB-lib -->
+
 		<dependency>
 		    <groupId>sc.fiji</groupId>
 		    <artifactId>VIB-lib</artifactId>
 		</dependency>
+
 		<dependency>
 		    <groupId>org.scijava</groupId>
 		    <artifactId>scijava-java3d</artifactId>
@@ -136,11 +136,13 @@
 		    <artifactId>junit</artifactId>
 		    <scope>test</scope>
 		</dependency>
+
  		<dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
             <scope>test</scope>
         </dependency>
+
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
@@ -151,14 +153,15 @@
 
 		<!-- Import from Apache -->
 		<dependency>
-		    <groupId>commons-io</groupId>
-		    <artifactId>commons-io</artifactId>
+ 			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>2.18.0</version>
 		</dependency>
+
 		<dependency>
 		    <groupId>org.apache.commons</groupId>
 		    <artifactId>commons-math3</artifactId>
 		</dependency>
-
 
 		<dependency>
 		    <groupId>org.itk.simple</groupId>
@@ -167,29 +170,15 @@
 		    <type>jar</type>
 		</dependency>
 
-		
+			
 		<dependency>
 		  <groupId>io.github.rocsg</groupId>
 		  <artifactId>fijiyama</artifactId>
 		  <version>4.0.10-SNAPSHOT</version>
 		</dependency> 
-
-
-
-		
-		<dependency>
-		    <groupId>jaolho.data</groupId>
-		    <artifactId>lma</artifactId>
-		    <version>1.3</version>
-		    <exclusions>
-		    	<exclusion>
-		    		<groupId>jama</groupId>
-		    		<artifactId>jama</artifactId>
-		    	</exclusion>
-		    </exclusions>
-		</dependency>
 	</dependencies>
   	
+  
   	
   	
  	<distributionManagement>
@@ -270,10 +259,4 @@
 	   </plugin>
 	  </plugins>
 	 </build>
-
-
-
-  	
-  	
-  	
 </project>
