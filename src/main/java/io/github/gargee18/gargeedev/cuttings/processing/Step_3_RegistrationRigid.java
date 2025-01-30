@@ -68,11 +68,30 @@ public class Step_3_RegistrationRigid implements PipelineStep{
             //And do the same for the moving image
             imgRefToInoc=trInocRef.transformImage(imgRef,imgRef);
             imgMovToInoc=trInocMov.transformImage(imgRef,imgMov);
-            
-            // if(true)continue;
+
+            imgRefToInoc.show();
+            imgRefToInoc.setTitle("Ref");
+            imgMovToInoc.show();
+            imgMovToInoc.setTitle("Mov");
+            ImagePlus imgComp = VitimageUtils.compositeNoAdjustOf(imgRefToInoc, imgMovToInoc, "Composite of aligned images");
+            imgComp.show();
+
             // Register to get the rigid matrix that align properly both images, but in the inoc space
             ItkTransform trRigid0 = autoLinearRegistrationWithPith(imgRefToInoc, imgMovToInoc, null, specimen, mask,testing);
-            trRigid0.writeMatrixTransformToFile(Config.getPathToRigidRegistrationMatrix(specimen,indexRef, indexMov));            
+            trRigid0.writeMatrixTransformToFile(Config.getPathToRigidRegistrationMatrix(specimen,indexRef, indexMov));    
+
+            ImagePlus movRegistered=trRigid0.transformImage(imgRefToInoc, imgMovToInoc);
+            ImagePlus compositefinal =  VitimageUtils.compositeNoAdjustOf(imgRefToInoc, movRegistered, "Composite of registered images");
+            compositefinal.show();
+
+            VitimageUtils.waitFor(30000000);
+
+            imgRef.close();
+            imgMov.close();
+            imgRefToInoc.close();
+            imgMovToInoc.close();
+            compositefinal.close();
+
         }
     }
     
@@ -95,8 +114,12 @@ public class Step_3_RegistrationRigid implements PipelineStep{
         regAct.neighX=2;
         regAct.neighX=2;
         regAct.neighZ=2;
+
         BlockMatchingRegistration bmRegistration = BlockMatchingRegistration.setupBlockMatchingRegistration(imgRef, imgMov, regAct);
         bmRegistration.mask=IJ.openImage(pathToMask);
+        VitimageUtils.printImageResume(imgRef);
+        VitimageUtils.printImageResume(imgMov);
+        VitimageUtils.printImageResume(bmRegistration.mask);
         ItkTransform trFinal=bmRegistration.runBlockMatching(null, false);
         bmRegistration.closeLastImages();
         bmRegistration.freeMemory();
@@ -108,9 +131,9 @@ public class Step_3_RegistrationRigid implements PipelineStep{
         int indexMov = step+1;
 
         // raw images
-        ImagePlus imgRef = IJ.openImage(Config.getPathToNormalizedImage(specimen,indexRef));
+        ImagePlus imgRef = IJ.openImage(Config.getPathToSubsampledImage(specimen,indexRef));
         imgRef.show();
-        ImagePlus imgMov = IJ.openImage(Config.getPathToNormalizedImage(specimen,indexMov));
+        ImagePlus imgMov = IJ.openImage(Config.getPathToSubsampledImage(specimen,indexMov));
         imgMov.show();
 
         // inoc aligned ref image
@@ -153,7 +176,16 @@ public class Step_3_RegistrationRigid implements PipelineStep{
 
 
 
+    public static void testResults(Specimen specimen, int step){
+        int indexRef = step;
+        int indexMov = step+1;
+        ImagePlus imgRef = IJ.openImage(Config.getPathToSubsampledImage(specimen,indexRef));
+        imgRef.show();
+        ImagePlus imgMov = IJ.openImage(Config.getPathToSubsampledImage(specimen,indexMov));
+        imgMov.show();
 
+
+    }
 
 
 
