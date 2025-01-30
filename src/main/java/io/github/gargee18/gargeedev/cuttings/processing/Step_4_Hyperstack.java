@@ -45,9 +45,9 @@ public class Step_4_Hyperstack implements PipelineStep{
                 ItkTransform trRigid = ItkTransform.readTransformFromFile(Config.getPathToRigidRegistrationMatrix(specimen, i-1, i));
                 // imgTransformed =trRigid.transformImage(img,imgTransformed);
                 ItkTransform trInocMov = ItkTransform.readTransformFromFile(Config.getPathToInoculationAlignmentTransformation(specimen,i));
-
-                ItkTransform trRigidPlusInoc = trInocMov.addTransform(trRigid); 
-                imgTransformed =trRigidPlusInoc.transformImage(img,imgTransformed);
+                imgTransformed =trInocMov.transformImage(img,imgTransformed);
+                // ItkTransform trRigidPlusInoc = trInocMov.addTransform(trRigid); 
+                imgTransformed =trRigid.transformImage(img,imgTransformed);
             }    
 
             // save to tab
