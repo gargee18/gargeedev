@@ -12,22 +12,26 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ij.gui.Roi;
+import ij.plugin.Duplicator;
 import ij.plugin.frame.RoiManager;
 public class TestPolarGeneralized {
 
 
     public static void main(String[] args) {
         ImageJ ij=new ImageJ();//Needed for testing
-
-
+        for (int i = 206; i <= 240; i++) {
+            if (i == 204) {
+                continue; // Skip iteration when i = 204
+            }
+        
         //Main variables
         boolean isMercatorActivated=false;
-        String imgPath="/home/rfernandez/Bureau/A_Test/Gargee/imgMov.tif";//The path of an image of a cutting, with the axis aligned with the z axis
-        String roiPath="/home/rfernandez/Bureau/A_Test/Gargee/test.roi";//The path of a PolygonRoi, drawn in the trigonometric direction (counter clockwise)
-        int halfWidth=120;//The half size (in X axis) of the resulting image
-        int insideRadiusCoverage=80;//The distance within the object (along radius) to be taken into account
+        String imgPath="/mnt/41d6c007-0c9e-41e2-b2eb-8d9c032e9e53/gargee/Cuttings_MRI_registration/B_" + i + "/hyperimage/B_" + i + "_Hyperstack.tif";//The path of an image of a cutting, with the axis aligned with the z axis
+        String roiPath="/mnt/41d6c007-0c9e-41e2-b2eb-8d9c032e9e53/gargee/Cuttings_MRI_registration/B_" + i + "/roi_cambium_on_hyperimage/contour.roi";//The path of a PolygonRoi, drawn in the trigonometric direction (counter clockwise)
+        int halfWidth=150;//The half size (in X axis) of the resulting image
+        int insideRadiusCoverage=100;//The distance within the object (along radius) to be taken into account
         int outsideRadiusCoverage=60;//The distance outside the object (along radius) to be taken into account
-        Point.Double expectedCentralPoint=new Point.Double(45,179);//A point indicating roughly the original coordinates 
+        Point.Double expectedInoculationPoint=new Point.Double(256,384);//A point indicating roughly the original coordinates 
                                                                   //of the tissue that will be displayed in the center in the resulting image
         
 
@@ -37,11 +41,38 @@ public class TestPolarGeneralized {
         List<Point.Double> points = resamplePolygonUniform(poly, 1, true); //Evenly space the points along the curve       
         Point.Double center=massCenterOfPointList(points);//Compute the center from the evenly spaced points
 
-        points = resamplePolygonUniformGeneralized(poly, 1, true,center);//Evenly space the points along the curve, but with a step of 1 orthogonally to radius       
-        ImagePlus []res=applyGeneralizedPolarTransform(img, points, center, expectedCentralPoint,halfWidth, insideRadiusCoverage,outsideRadiusCoverage,isMercatorActivated);
+        //points = resamplePolygonUniform(poly, 1, true/* ,center*/);//Evenly space the points along the curve, but with a step of 1 orthogonally to radius       
+        ImagePlus []res=applyGeneralizedPolarTransform3DT(img, points, center, expectedInoculationPoint,halfWidth, insideRadiusCoverage,outsideRadiusCoverage,isMercatorActivated);
         for(ImagePlus resi : res)resi.show();
         img.setTitle("Original image");
         img.show();
+
+        String outputDir = "/mnt/41d6c007-0c9e-41e2-b2eb-8d9c032e9e53/gargee/Cuttings_MRI_registration/B_"+ i + "/Polar_Transform_Results/";
+          // Corresponding names (match with the order in returned array)
+        String[] names = {
+            "GeneralizedPolarTransform",
+            "Width factor polar",
+            "Sine factor polar",
+            "X correspondence polar",
+            "Y correspondence polar",
+            "Width factor 2d",
+            "Sine factor 2d",
+            "X correspondence 2d",
+            "Y correspondence 2d"
+        };
+
+       
+        // Save images using their names
+        for (int j = 0; j < res.length; j++) {
+            if (res[j] != null) {  // Ensure the image is valid
+                String filePath = outputDir + names[j].replace(" ", "_") + ".tif"; // Replace spaces with underscores
+                IJ.save(res[j], filePath);
+                System.out.println("Saved: " + filePath);
+            }
+        }
+        img.close();
+        for(ImagePlus resi : res)resi.close();
+    }
     }
 
 
@@ -251,20 +282,45 @@ public class TestPolarGeneralized {
         return sampledPoints;
     }
 
+
+    public static ImagePlus []applyGeneralizedPolarTransform3DT(ImagePlus imp,
+                                                           List<Point.Double> contour,
+                                                           Point.Double center,Point.Double expectedInoculationPoint,int halfWidth,int insideRadiusCoverage,int outsideRadiusCoverage,boolean isMercatorActivated) {
+        //Split image into 2D slices
+        int nFrames=imp.getNFrames();
+        int Z=imp.getNSlices();
+        ImagePlus [] volumes=new ImagePlus[nFrames];
+        ImagePlus []result=new ImagePlus[7];
+        for (int i=0;i<nFrames;i++){
+            System.out.println("Processing frame "+i);
+            volumes[i]=new Duplicator().run(imp,1,1,1,Z,i+1,i+1);   
+            VitimageUtils.adjustImageCalibration(volumes[i],imp);   
+            result=applyGeneralizedPolarTransform(volumes[i],contour,center,expectedInoculationPoint,halfWidth,insideRadiusCoverage,outsideRadiusCoverage,isMercatorActivated);
+            volumes[i]=result[0];      
+        }
+        
+        ImagePlus combinedStack= VitimageUtils.hyperStackingChannels(volumes);       
+        combinedStack=VitimageUtils.hyperStackChannelToHyperStackFrame(combinedStack);                     
+        return new ImagePlus[]{combinedStack,result[1],result[2],result[3],result[4],result[5],result[6],result[7],result[8]}; 
+    }
+
+
+
+
     public static ImagePlus []applyGeneralizedPolarTransform(ImagePlus imp,
                                                            List<Point.Double> contour,
-                                                           Point.Double center,Point.Double expectedCentralPoint,int halfWidth,int insideRadiusCoverage,int outsideRadiusCoverage,boolean isMercatorActivated) {
+                                                           Point.Double center,Point.Double expectedInoculationPoint,int halfWidth,int insideRadiusCoverage,int outsideRadiusCoverage,boolean isMercatorActivated) {
         //Split image into 2D slices
         ImagePlus [] slices=VitimageUtils.stackToSlices(imp);
         ImagePlus [] slicesTrans=VitimageUtils.stackToSlices(imp);
         ImagePlus[]result=null;
         //Apply 2D function to the slices
         for (int i=0;i<slices.length;i++){
-            result=applyGeneralizedPolarTransform2D(slices[i],contour,center,expectedCentralPoint,halfWidth,insideRadiusCoverage,outsideRadiusCoverage,isMercatorActivated);
+            result=applyGeneralizedPolarTransform2D(slices[i],contour,center,expectedInoculationPoint,halfWidth,insideRadiusCoverage,outsideRadiusCoverage,isMercatorActivated);
             slicesTrans[i]=result[0];
         }
         ImagePlus combinedSlices= VitimageUtils.slicesToStack(slicesTrans);                            
-        return new ImagePlus[]{combinedSlices,result[1],result[2],result[3],result[4],result[5],result[6]}; 
+        return new ImagePlus[]{combinedSlices,result[1],result[2],result[3],result[4],result[5],result[6],result[7],result[8]}; 
     }
 
     public static ImagePlus[] applyGeneralizedPolarTransform2D(ImagePlus imp,
@@ -311,20 +367,24 @@ public class TestPolarGeneralized {
         ImageProcessor resultProcessor = ip.createProcessor(Xprime, Yprime);//TODO : depend on the size factor
         //Images to store the correspondences in x,y, and the widthfactor
         ImageProcessor widthPolarMapProcessor = ip.createProcessor(Xprime, Yprime).convertToFloatProcessor();//TODO : depend on the size factor
+        ImageProcessor sinePolarMapProcessor = ip.createProcessor(Xprime, Yprime).convertToFloatProcessor();//TODO : depend on the size factor
         ImageProcessor xPolarMapProcessor = ip.createProcessor(Xprime, Yprime).convertToFloatProcessor();//TODO : depend on the size factor
         ImageProcessor yPolarMapProcessor = ip.createProcessor(Xprime, Yprime).convertToFloatProcessor();//TODO : depend on the size factor
         //In case of
         for(int x=0;x<Xprime;x++)for(int y=0;y<Yprime;y++){
             widthPolarMapProcessor.putPixelValue(x,y,0);
-            xPolarMapProcessor.putPixelValue(x,y,0);
+            sinePolarMapProcessor.putPixelValue(x,y,0);
+            widthPolarMapProcessor.putPixelValue(x,y,0);
             yPolarMapProcessor.putPixelValue(x,y,0);
         }
 
         ImageProcessor width2DMapProcessor = ip.createProcessor(X, Y).convertToFloatProcessor();//TODO : depend on the size factor
+        ImageProcessor sine2DMapProcessor = ip.createProcessor(X, Y).convertToFloatProcessor();//TODO : depend on the size factor
         ImageProcessor x2DMapProcessor = ip.createProcessor(X, Y).convertToFloatProcessor();//TODO : depend on the size factor
         ImageProcessor y2DMapProcessor = ip.createProcessor(X, Y).convertToFloatProcessor();//TODO : depend on the size factor
         for(int x=0;x<X;x++)for(int y=0;y<Y;y++){
             width2DMapProcessor.putPixelValue(x,y,0);
+            sine2DMapProcessor.putPixelValue(x,y,0);
             x2DMapProcessor.putPixelValue(x,y,0);
             y2DMapProcessor.putPixelValue(x,y,0);
         }
@@ -340,8 +400,17 @@ public class TestPolarGeneralized {
             for (int XpIndex = 0; XpIndex < nAngles; XpIndex++) {
                 double xCont=contour.get(XpIndex).x;
                 double yCont=contour.get(XpIndex).y;
+                double xCont2=contour.get(XpIndex+(XpIndex==(nAngles-1) ? -1 : 1)).x;
+                double yCont2=contour.get(XpIndex+(XpIndex==(nAngles-1) ? -1 : 1)).y;
+                double[]vectCurveNorm=new double[]{xCont2-xCont,yCont2-yCont,0};
+                vectCurveNorm=TransformUtils.normalize(vectCurveNorm);
+
                 double[]vectToCenter=new double[]{center.x-contour.get(XpIndex).x,center.y-contour.get(XpIndex).y,0};
                 double[]vectToCenterNorm=TransformUtils.multiplyVector(vectToCenter, 1.0/TransformUtils.norm(vectToCenter));
+
+                double cosine=TransformUtils.scalarProduct(vectCurveNorm, vectToCenterNorm);
+                double sine=Math.sqrt(1-cosine*cosine);
+
                 double distanceToCenter=TransformUtils.norm(vectToCenter);
                 for (double r = -outsideRadiusCoverage/deltaR; r < insideRadiusCoverage/deltaR; r++  ) {
                     double radius=r*deltaR;
@@ -357,13 +426,14 @@ public class TestPolarGeneralized {
                         if(radius>=distanceToCenter)widthSizeFactor=Double.MAX_VALUE;
                         else widthSizeFactor =distanceToCenter/(distanceToCenter-radius);
                         widthPolarMapProcessor.putPixelValue(XpIndex, (int)(Yprime-1-r-(outsideRadiusCoverage/deltaR)), widthSizeFactor);
+                        sinePolarMapProcessor.putPixelValue(XpIndex, (int)(Yprime-1-r-(outsideRadiusCoverage/deltaR)), sine);
                         xPolarMapProcessor.putPixelValue(XpIndex, (int)(Yprime-1-r-(outsideRadiusCoverage/deltaR)), xSample);
                         yPolarMapProcessor.putPixelValue(XpIndex, (int)(Yprime-1-r-(outsideRadiusCoverage/deltaR)), ySample);
 
                         width2DMapProcessor.putPixelValue((int)xSample, (int)ySample, widthSizeFactor);
+                        sine2DMapProcessor.putPixelValue((int)xSample, (int)ySample, sine);
                         x2DMapProcessor.putPixelValue((int)xSample, (int)ySample, XpIndex);
                         y2DMapProcessor.putPixelValue((int)xSample, (int)ySample, (int)(Yprime-1-r-(outsideRadiusCoverage/deltaR)));
-
 
                     } else {
                         resultProcessor.putPixelValue(XpIndex, (int)(Yprime-1-r-(outsideRadiusCoverage/deltaR)), 0);
@@ -371,20 +441,15 @@ public class TestPolarGeneralized {
                 }
             }
         }
-        else{//Mercator projection : the path steps along the radius are decreasing while approaching the center, to preserve the aspect ratio 
-            //Not yet
-            //TODO
-        }
-
-
-
-
+ 
         // Création de l'ImagePlus finale
         ImagePlus result = new ImagePlus("GeneralizedPolarTransform", resultProcessor);
         VitimageUtils.copyImageCalibrationAndRange(result, imp);
 
         ImagePlus imgwpol=new ImagePlus("Width factor polar",widthPolarMapProcessor);
         VitimageUtils.copyImageCalibrationAndRange(imgwpol, imp);
+        ImagePlus imgspol=new ImagePlus("Sine factor polar",sinePolarMapProcessor);
+        VitimageUtils.copyImageCalibrationAndRange(imgspol, imp);
         ImagePlus imgxpol=new ImagePlus("X correspondence polar",xPolarMapProcessor);
         VitimageUtils.copyImageCalibrationAndRange(imgxpol, imp);
         ImagePlus imgypol=new ImagePlus("Y correspondence polar",yPolarMapProcessor);
@@ -392,14 +457,17 @@ public class TestPolarGeneralized {
 
         ImagePlus imgw2d=new ImagePlus("Width factor 2d",width2DMapProcessor);
         VitimageUtils.copyImageCalibrationAndRange(imgw2d, imp);
+        ImagePlus imgs2d=new ImagePlus("Sine factor 2d",sine2DMapProcessor);
+        VitimageUtils.copyImageCalibrationAndRange(imgs2d, imp);
         ImagePlus imgx2d=new ImagePlus("X correspondence 2d",x2DMapProcessor);
         VitimageUtils.copyImageCalibrationAndRange(imgx2d, imp);
         ImagePlus imgy2d=new ImagePlus("Y correspondence 2d",y2DMapProcessor);
         VitimageUtils.copyImageCalibrationAndRange(imgy2d, imp);
 
-        return new ImagePlus[]{result,imgwpol,imgxpol,imgypol,imgw2d,imgx2d,imgy2d};
+        return new ImagePlus[]{result,imgwpol,imgspol,imgxpol,imgypol,imgw2d,imgs2d,imgx2d,imgy2d};
     }
 
+ 
     
  
 }
