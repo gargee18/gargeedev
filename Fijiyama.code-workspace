@@ -1,0 +1,15 @@
+{
+	"folders": [
+		{
+			"path": "../Fijiyama"
+		},
+		{
+			"name": "gargeedev",
+			"path": "."
+		}
+	],
+	"settings": {
+		"maven.view": "flat",
+		"java.debug.settings.onBuildFailureProceed": true
+	}
+}

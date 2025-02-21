@@ -8,7 +8,7 @@ import io.github.rocsg.fijiyama.fijiyamaplugin.RegistrationAction;
 import io.github.rocsg.fijiyama.registration.BlockMatchingRegistration;
 import io.github.rocsg.fijiyama.registration.ItkTransform;
 import io.github.rocsg.fijiyama.registration.Transform3DType;
-import jogamp.opengl.glu.mipmap.Image;
+
 
 public class TestBugBM {
     public static void main(String[] args) {
@@ -19,7 +19,7 @@ public class TestBugBM {
         ImagePlus imgMask=IJ.openImage(pathToMask);
         ImagePlus imgRefCopy=VitimageUtils.imageCopy(imgRef);
         boolean testing=true;
-        boolean tweaking=true;
+        boolean tweaking=false;
 
         if(tweaking){
             VitimageUtils.adjustImageCalibration(imgRef, new double[]{1,1,1}, "mm");
@@ -32,7 +32,7 @@ public class TestBugBM {
         regAct.typeAutoDisplay=(testing ? 2 : 0);   
         regAct.higherAcc=0; 
         regAct.levelMaxLinear=3;
-        regAct.levelMinLinear=(testing ? 2 : 1);
+        regAct.levelMinLinear=(testing ? 2 : 2);
         regAct.bhsX=3;
         regAct.bhsY=3;
         regAct.bhsZ=3;

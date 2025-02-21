@@ -1,7 +1,7 @@
  //Input :  point 1 is top cutting, point 2 is bottom cutting, point 3 is inoculation point (gathered with ImageJ), given in RealWorldCoordinates (in mm for example)
  //Output : the ItkTransform that can be applied to an image in order to get it resampled, with the inoculation point at the given coordinates (in RWC)
 
-package io.github.gargee18.gargeedev.cuttings.processing;
+ package io.github.gargee18.gargeedev.cuttings.processing;
 
 import io.github.rocsg.fijiyama.common.VitimageUtils;
 import io.github.gargee18.gargeedev.cuttings.core.Config;
@@ -16,7 +16,7 @@ import ij.ImagePlus;
 public class Step_2_InocAlignment implements PipelineStep{
 
     public static void main(String[] args) throws Exception{
-        Specimen spec= new Specimen("B_201");
+        Specimen spec= new Specimen("B_229");
         new Step_2_InocAlignment().execute(spec,true); 
     }
 

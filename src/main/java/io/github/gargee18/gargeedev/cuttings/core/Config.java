@@ -8,7 +8,9 @@ public class Config {
     public final static String[] timestamps = new String[]{"J001", "J029", "J077", "J141"};
    
     // Base directory for this project
-    public final static String mainDir = "/mnt/41d6c007-0c9e-41e2-b2eb-8d9c032e9e53/gargee/Cuttings/";
+    // public final static String mainDir = "/mnt/41d6c007-0c9e-41e2-b2eb-8d9c032e9e53/gargee/Cuttings_MRI_registration/";
+    public final static String mainDir = "/mnt/41d6c007-0c9e-41e2-b2eb-8d9c032e9e53/gargee/Cuttings/"; //If phenodrone
+    // public final static String mainDir = "/home/phukon/Desktop/Cuttings/"; //if local
 
     // Path to get high res raw data
     public static String getPathToRawImageDir() {
@@ -18,10 +20,6 @@ public class Config {
     // Get Raw data 
     public static String getPathToRawImage(Specimen specimen, int step) {
         return mainDir+"Data/01_Raw/"+specimen.getName()+"_"+timestamps[step]+".tif";
-    }
-
-    public static String getPathToMask(Specimen specimen, int step){
-        return mainDir+"Data/05_Mask/"+specimen.getName()+"_mask_"+timestamps[step]+".tif";
     }
 
     // Path to get high res normalized data
@@ -34,9 +32,9 @@ public class Config {
         return mainDir+"Data/02_Normalized/"+specimen.getName()+"_"+timestamps[step]+"_normalized.tif";
     }
 
-     // Get Cropped data 
-    public static String getPathToCroppedImage(Specimen specimen, int step) {
-        return mainDir+"Data/06_Cropped_z/"+specimen.getName()+"_"+timestamps[step]+"_cropped_z.tif";
+    // Get path to aligned images
+    public static String getPathToInocAlignedImage(Specimen specimen, int step) {
+        return mainDir+"Data/03_InocAligned/"+specimen.getName()+"_"+timestamps[step]+"_aligned.tif";
     }
 
     // Path to get low res data 
@@ -44,17 +42,30 @@ public class Config {
         return mainDir+"Data/04_Subsampled/";
     }
 
-
-    // Get path to aligned images
-    public static String getPathToInocAlignedImage(Specimen specimen, int step) {
-        return mainDir+"Data/03_InocAligned/"+specimen.getName()+"_"+timestamps[step]+"_aligned.tif";
-    }
-
-    // Get low res data 
-    public static String getPathToSubsampledImage(Specimen specimen, int step){
+     // Get low res data 
+     public static String getPathToSubsampledImage(Specimen specimen, int step){
         return mainDir+"Data/04_Subsampled/"+specimen.getName()+"_"+timestamps[step]+"_sub.tif";
     }
 
+    public static String getPathToMask(Specimen specimen, int step){
+        return mainDir+"Data/05_Mask/"+specimen.getName()+"_mask.tif";
+        // return mainDir+"Data/05_Mask/"+specimen.getName()+"_mask_"+timestamps[step]+".tif";
+    }
+
+    // Get Cropped data 
+    public static String getPathToCroppedImage(Specimen specimen, int step) {
+        return mainDir+"Data/06_Cropped_z/"+specimen.getName()+"_"+timestamps[step]+"_cropped_z.tif";
+    }
+
+    // Get path to aligned images sub
+    public static String getPathToInocAlignedImageSub(Specimen specimen, int step) {
+        return mainDir+"Data/07_InocSub/"+specimen.getName()+"_"+timestamps[step]+".tif";
+    }
+
+    //Get contour ROI
+    public static String getPathToContourROIForGeneralizedPolarTransform(Specimen specimen){
+        return mainDir+"Data/08_ROIContourGPT/"+specimen.getName()+"_contour.roi";
+    }
 
     // Get Transformation Matrix for Inoculation Alignment
     public static String getPathToInoculationAlignmentTransformation(Specimen specimen, int step){
@@ -66,11 +77,23 @@ public class Config {
         return mainDir+"Processing/02_RigidRegistration/"+specimen.getName()+"_"+timestamps[stepRef]+"_"+timestamps[stepMov]+"_TR_MAT_Rigid_Reg.txt";
     }
 
+    //Get Polar Transformed Images Directory
+    public static String getPathtoPolarTransformsDir(Specimen specimen){
+        return mainDir+"Processing/03_PolarTransform/";
+    }
+
     //Get hyperstack
     public static String getPathToHyperstack(Specimen specimen){
         return mainDir+"Results/01_Hyperstack/"+specimen.getName()+"_Hyperstack.tif";
     }
 
+    //Get polar atlas
+    public static String getPathToPolarAtlas(){
+        return mainDir+"Results/02_Atlas/PolarAtlas/";
+    }
+
+    
+   
    
    
    

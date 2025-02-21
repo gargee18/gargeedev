@@ -10,6 +10,7 @@
  */
 package io.github.gargee18.gargeedev.cuttings.processing;
 
+
 import ij.IJ;
 import ij.ImagePlus;
 import ij.measure.Calibration;
@@ -29,7 +30,7 @@ public class Step_1_Subsample implements PipelineStep {
         subsampleRatioStandard=2;
     }
     public static void main(String[] args) throws Exception{
-        Specimen spec= new Specimen("B_201");
+        Specimen spec= new Specimen("B_230");
         new Step_1_Subsample().execute(spec,true); 
     }
 

@@ -1,4 +1,4 @@
-package io.github.gargee18.gargeedev.cuttings.core;
+package io.github.rocsg.fijiyama.gargeetest.cuttings.core;
 
 public interface PipelineStep {
     void execute(Specimen specimen) throws Exception;
