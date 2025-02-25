@@ -1,4 +1,4 @@
-package io.github.rocsg.fijiyama.gargeetest.cuttings.core;
+package io.github.gargee18.gargeedev.cuttings.core;
 
 import java.util.List;
 
